@@ -1,3 +1,4 @@
+from django.core.signing import Signer
 from rest_framework import serializers
 from image.models import Image
 
@@ -25,7 +26,9 @@ class ImageSerializer(serializers.ModelSerializer):
         if tier.link_originally_image:
             links['link_originally_image'] = scheme_host_name + obj.image.url
         if tier.expiring_links:
-            links['expiring_link'] = scheme_host_name + obj.image.url+'DOPISACCCCCCCCCCCCCCC'
+            signer = Signer()
+            signed_url = signer.sign_object({'path': obj.image.name})
+            links['expiring_link'] = scheme_host_name + '/api/v1/create_expiring_link' + '?image_name=' + signed_url + '&seconds='
         for height in thumbnail_sizes:
             name_thumbnail = 'thumbnail_' + str(height) + '_link'
             links[name_thumbnail] = scheme_host_name + obj.image.url + '?height=' + str(height)
