@@ -122,7 +122,7 @@ def get_image_binary(request):
         expiry_time = datetime.strptime(image_data['expiry_time'], '%Y-%m-%d %H:%M:%S')
     except:
         return Response({'error': 'Invalid signed URL.'})
-    if expiry_time > datetime.now():
+    if expiry_time < datetime.now():
         return Response({'error': 'Link has expired.'})
     image = Image.objects.filter(image__contains=image_data['path']).first()
     path = image_data['path']
